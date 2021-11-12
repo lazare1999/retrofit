@@ -7,7 +7,10 @@ import android.util.Log;
 
 import java.util.List;
 
+import ge.msda.myapplication.api.endpoints.ApiService;
 import ge.msda.myapplication.api.models.Data;
+import ge.msda.myapplication.api.models.PostUserResponseModel;
+import ge.msda.myapplication.api.models.Resource;
 import ge.msda.myapplication.api.models.User;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -20,7 +23,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        App.getInstance().getRetrofitClient().getApiService().getUsers(1).enqueue(new Callback<Data<List<User>>>() {
+        ApiService apiService = App.getInstance().getRetrofitClient().getApiService();
+
+        apiService.getUsers(1).enqueue(new Callback<Data<List<User>>>() {
 
             @Override
             public void onResponse(Call<Data<List<User>>> call, Response<Data<List<User>>> response) {
@@ -38,6 +43,44 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
+        PostUserResponseModel modal = new PostUserResponseModel("lazare", "mia");
+        apiService.postUser(modal).enqueue(new Callback<PostUserResponseModel>() {
+
+            @Override
+            public void onResponse(Call<PostUserResponseModel> call, Response<PostUserResponseModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d("PostUserResponseModel", response.body().toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PostUserResponseModel> call, Throwable t) {
+
+            }
+
+        });
+
+
+        apiService.getResources(1).enqueue(new Callback<Data<List<Resource>>>() {
+
+            @Override
+            public void onResponse(Call<Data<List<Resource>>> call, Response<Data<List<Resource>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Resource> resource = response.body().getData();
+                    for (int i = 0; i < resource.size(); i++) {
+                        Log.d("MyData", resource.get(i).toString());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Data<List<Resource>>> call, Throwable t) {
+
+            }
+
+        });
+
 
     }
 
